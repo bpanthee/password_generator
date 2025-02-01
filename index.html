@@ -8,11 +8,20 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
             min-height: 100vh;
             background-color: #f0f0f0;
             margin: 0;
+            padding: 2rem 0;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2rem;
         }
 
         .container {
@@ -28,6 +37,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 1.5rem;
+            gap: 0.5rem;
         }
 
         #password {
@@ -36,7 +46,6 @@
             font-size: 1.2rem;
             border: 1px solid #ddd;
             border-radius: 5px;
-            margin-right: 0.5rem;
         }
 
         .settings {
@@ -77,13 +86,14 @@
             margin: 0.5rem 0;
         }
     </style>
-<link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
+    <h1 class="title">Random Password Generator</h1>
     <div class="container">
         <div class="password-display">
             <input type="text" id="password" readonly>
-            <button onclick="copyPassword()">Copy</button>
+            <button id="copyButton">Copy</button>
         </div>
         
         <div class="settings">
@@ -123,17 +133,18 @@
         const lengthSlider = document.getElementById('length');
         const lengthValue = document.getElementById('lengthValue');
         const passwordField = document.getElementById('password');
+        const copyButton = document.getElementById('copyButton');
 
-        // Update length display when slider moves
         lengthSlider.addEventListener('input', function() {
             lengthValue.textContent = this.value;
             generatePassword();
         });
 
-        // Generate password when any checkbox changes
         document.querySelectorAll('.settings input[type="checkbox"]').forEach(checkbox => {
             checkbox.addEventListener('change', generatePassword);
         });
+
+        copyButton.addEventListener('click', copyPassword);
 
         function generatePassword() {
             const length = lengthSlider.value;
@@ -151,6 +162,7 @@
 
             if (!chars) {
                 passwordField.value = 'Select at least one option';
+                copyButton.textContent = 'Copy';
                 return;
             }
 
@@ -160,15 +172,17 @@
             }
 
             passwordField.value = password;
+            copyButton.textContent = 'Copy';
         }
 
         function copyPassword() {
+            if (!passwordField.value || passwordField.value === 'Select at least one option') return;
+            
             passwordField.select();
             document.execCommand('copy');
-            alert('Password copied to clipboard!');
+            copyButton.textContent = 'Copied!';
         }
 
-        // Generate initial password
         generatePassword();
     </script>
 </body>
