@@ -117,6 +117,14 @@
             <div class="setting-item">
                 <label><input type="checkbox" id="symbols" checked> Include Symbols</label>
             </div>
+
+            <div class="setting-item">
+                <label><input type="checkbox" id="excludeSimilar" checked> Exclude Similar Characters (e.g. i, l, 1, L, o, 0, O)</label>
+            </div>
+            
+            <div class="setting-item">
+                <label><input type="checkbox" id="excludeAmbiguous" checked> Exclude Ambiguous Characters ( { } [ ] ( ) / \ ' " ` ~ , ; : . < > )</label>
+            </div>
         </div>
 
         <button onclick="generatePassword()">Generate Password</button>
@@ -155,10 +163,24 @@
                 symbols: document.getElementById('symbols').checked
             };
 
-            let chars = '';
-            for (const type in selected) {
-                if (selected[type]) chars += characters[type];
+            let uppercaseChars = selected.uppercase ? characters.uppercase : '';
+            let lowercaseChars = selected.lowercase ? characters.lowercase : '';
+            let numbersChars = selected.numbers ? characters.numbers : '';
+            let symbolsChars = selected.symbols ? characters.symbols : '';
+
+            // Filter similar characters
+            if (document.getElementById('excludeSimilar').checked) {
+                uppercaseChars = uppercaseChars.replace(/[ILO]/g, '');
+                lowercaseChars = lowercaseChars.replace(/[ilo]/g, '');
+                numbersChars = numbersChars.replace(/[10]/g, '');
             }
+
+            // Filter ambiguous characters
+            if (document.getElementById('excludeAmbiguous').checked) {
+                symbolsChars = symbolsChars.replace(/[{}[\]()/\\'"`~,;:.<>]/g, '');
+            }
+
+            const chars = uppercaseChars + lowercaseChars + numbersChars + symbolsChars;
 
             if (!chars) {
                 passwordField.value = 'Select at least one option';
